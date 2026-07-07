@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Base KAPLAY - Emojis & ZzFX</title>
+    <!-- Importar Noto Color Emoji de Google Fonts para consistencia visual multiplataforma -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #0b0914;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      canvas {
+        display: block;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+        border-radius: 12px;
+      }
+      /* Estilos para el Overlay HTML */
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(11, 9, 20, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      #overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .panel {
+        background: rgba(18, 15, 32, 0.95);
+        border: 2px solid rgba(40, 35, 68, 0.8);
+        border-radius: 16px;
+        padding: 30px;
+        max-width: 380px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        display: none;
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: #e0dcf0;
+      }
+      #overlay.active .panel.active {
+        display: block;
+        transform: scale(1);
+      }
+      .panel h2 {
+        margin-top: 0;
+        font-size: 26px;
+        color: #ffd700;
+        text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+      }
+      .panel p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 24px;
+        color: #b0a9cf;
+      }
+      .panel button {
+        background: linear-gradient(135deg, #4285f4, #9c27b0);
+        border: none;
+        color: white;
+        padding: 12px 28px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+        font-family: inherit;
+      }
+      .panel button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(156, 39, 176, 0.6);
+      }
+      .panel button:active {
+        transform: scale(0.95);
+      }
+      /* Panel de Regalo específico */
+      #gift-panel {
+        max-width: 90%;
+        width: 450px;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      .gift-container {
+        position: relative;
+        background: rgba(18, 15, 32, 0.95);
+        border: 2px solid rgba(120, 180, 255, 0.4);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      }
+      .gift-container img {
+        width: 100%;
+        max-height: 60vh;
+        object-fit: contain;
+        border-radius: 8px;
+        display: block;
+        margin: 0 auto 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      }
+      .gift-container button {
+        background: linear-gradient(135deg, #78b4ff, #4285f4);
+        box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+      }
+      .gift-container button:hover {
+        box-shadow: 0 6px 20px rgba(66, 133, 244, 0.6);
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-ee05add9.js"></script>
+  </head>
+  <body>
+    <!-- Overlay HTML de paneles del juego -->
+    <div id="overlay">
+      <!-- Panel de Victoria -->
+      <div id="victory-panel" class="panel">
+        <h2>🎉 ¡Enhorabuena! 🎉</h2>
+        <p>¡Enhorabuena! Aquí tienes tu regalo</p>
+        <button id="btn-accept-gift">Aceptar</button>
+      </div>
+
+      <!-- Panel de Derrota -->
+      <div id="defeat-panel" class="panel">
+        <h2>😢 ¡Ohhh! 😢</h2>
+        <p>fallos agotados.</p>
+        <button id="btn-retry">Volver a intentarlo</button>
+      </div>
+
+      <!-- Panel de Regalo 1 -->
+      <div id="gift-panel" class="panel">
+        <div class="gift-container">
+          <img src="assets/regalo1.jpg" alt="Tu Regalo 🎁" onerror="this.src='https://placehold.co/400x500/120f22/78b4ff?text=%F0%9F%8E%81+%C2%A1Regalo!+%F0%9F%8E%81';" />
+          <button id="btn-next-gift">Continuar 🎁</button>
+        </div>
+      </div>
+
+      <!-- Panel Teaser -->
+      <div id="teaser-panel" class="panel">
+        <h2>Ah, pero...</h2>
+        <p style="font-size: 20px; font-weight: bold; color: #ffd700; margin: 24px 0;">¡hay otra cosa más!</p>
+        <button id="btn-reveal-special">¿El qué, el qué? 🤔</button>
+      </div>
+
+      <!-- Panel de Regalo Especial -->
+      <div id="special-gift-panel" class="panel">
+        <div class="gift-container" style="border-color: #ffd700;">
+          <img src="assets/regalo_espe.jpg" alt="¡Regalo Especial! 🌟" onerror="this.src='https://placehold.co/400x500/120f22/ffd700?text=%E2%AD%90+%C2%A1Sorpresa!+%E2%AD%90';" />
+          <button id="btn-close-special" style="background: linear-gradient(135deg, #ffd700, #ff9800); color: #120f22; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);">Volver a jugar 🎮</button>
+        </div>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
